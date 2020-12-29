@@ -54,3 +54,5 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'needle', '~> 1.3'
+gem 'pry-rails'
+gem 'typhoeus'
