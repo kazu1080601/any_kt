@@ -163,9 +163,7 @@ function startNearbySearch(latLng){
   pagination : ページネーション
 */
 function displayResults(results, status, pagination) {
-    
   if(status == google.maps.places.PlacesServiceStatus.OK) {
-  
     //検索結果をplacesList配列に連結
     placesList = placesList.concat(results);
     
