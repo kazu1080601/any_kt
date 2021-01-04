@@ -10,9 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_04_053856) do
+ActiveRecord::Schema.define(version: 2021_01_04_072151) do
 
-  create_table "valuation_recommends", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "nickname", null: false
+    t.integer "prefecture_id", null: false
+    t.string "city"
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "valuation_recommends", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "valuation_id"
     t.integer "recommend_id", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -20,7 +35,7 @@ ActiveRecord::Schema.define(version: 2021_01_04_053856) do
     t.index ["valuation_id"], name: "index_valuation_recommends_on_valuation_id"
   end
 
-  create_table "valuations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "valuations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "comment", null: false
     t.date "date", null: false
     t.integer "genre_id", null: false
