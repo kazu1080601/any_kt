@@ -1,24 +1,43 @@
-# README
+# テーブル設計
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## usersテーブル
 
-Things you may want to cover:
+| Column             | Type       | Options                        |
+| ------------------ | ---------- | ------------------------------ |
+| nickname           | string     | null: false                    |
+| email              | string     | null: false                    |
+| encrypted_password | string     | null: false                    |
+| prefecture_id      | integer    | null: false                    |
+| city               | string     | null: false                    |
 
-* Ruby version
+### Association
+- has_many   :valuations
+- belongs_to :prefecture
 
-* System dependencies
 
-* Configuration
+## valuationsテーブル
 
-* Database creation
+| Column             | Type       | Options                        |
+| ------------------ | ---------- | ------------------------------ |
+| comment            | text       | null: false                    |
+| date               | date       | null: false                    |
+| genre_id           | integer    | null: false                    |
+| place_id           | string     | null: false                    |
+| user               | references | foreign_key: true              |
 
-* Database initialization
+### Association
+- belongs_to :user
+- has_many   :valuation_recommends
+- belongs_to :genre
 
-* How to run the test suite
 
-* Services (job queues, cache servers, search engines, etc.)
+## valuation-recommendsテーブル
 
-* Deployment instructions
+| Column             | Type       | Options                        |
+| ------------------ | ---------- | ------------------------------ |
+| valuation          | references | foreign_key: true              |
+| recommend_id       | integer    | null: false                    |
 
-* ...
+### Association
+- belongs_to :valuation
+- belongs_to :recommend
