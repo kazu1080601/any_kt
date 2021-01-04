@@ -1,7 +1,6 @@
 class RecommendationsController < ApplicationController
   def index
     get_tweet
-    binding.pry
   end
 
   private
@@ -16,7 +15,6 @@ class RecommendationsController < ApplicationController
     # To set environment variables on Mac OS X, run the export command below from the terminal:
     # export BEARER_TOKEN='YOUR-TOKEN'
     bearer_token = ENV["BEARER_TOKEN"]
-    binding.pry
 
     # Endpoint URL for the Recent Search API
     search_url = "https://api.twitter.com/2/tweets/search/recent"
