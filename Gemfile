@@ -56,3 +56,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'pry-rails'
 gem 'typhoeus'
 gem 'devise'
+gem 'jp_prefecture'
+gem 'active_hash'
