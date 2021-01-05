@@ -1,0 +1,52 @@
+header{
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 150px;
+}
+
+.header-left{
+}
+
+.logo{
+  height: 80px;
+  width: calc(80px * 1.618);
+  margin: 10px;
+}
+
+.header-center{
+  background-color: brown;
+  width: 100%;
+}
+
+.header-message{
+  height: 80px;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.header-right{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 300px;
+}
+
+.user-nickname{
+  text-decoration: none;
+  color: #333333;
+}
+
+.logout{
+  text-decoration: none;
+  color: #333333;
+}
+
+.login{
+  text-decoration: none;
+  color: #333333;
+}
+
+.sign-up{
+  text-decoration: none;
+  color: #333333;
+}
