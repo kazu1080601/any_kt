@@ -1,0 +1,27 @@
+.search-area{
+  margin: 20px 150px;
+}
+
+.main-area{
+  display: flex;
+  margin: 0 150px;
+  height: 500px;
+}
+
+#mapArea{
+  width: 1000px;
+}
+
+.result-area{
+  margin-left: 50px;
+  width: 500px;
+  height: 100%;
+}
+
+#results{
+  height: 90%;
+  border: 1px dotted;
+  padding: 10px;
+  overflow-y: scroll;
+  background: white;
+}
