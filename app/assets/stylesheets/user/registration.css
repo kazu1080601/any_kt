@@ -34,10 +34,6 @@
   padding-top: 20px;
 }
 
-.form-group:first-child {
-  padding: 0;
-}
-
 .form-text-wrap {
   width: 100%;
   height: 20%;
@@ -60,77 +56,22 @@
   resize: none;
 }
 
+.select-box {
+  height: 30px;
+  width: 100%;
+  background-color: #f5f5f5;
+  padding-left: 20px;
+}
+
 .info-text {
   color: #888;
   font-size: 15px;
   margin-top: 3px;
 }
 
-.input-name-wrap {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.input-name {
-  width: 130px;
-  margin: 5px 20px 0 20px;
-  height: 48px;
-  line-height: 30px;
-  padding: 10px 16px 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background: #fff;
-  font-size: 14px;
-  resize: none;
-}
-
-.input-birth-wrap {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.input-birth-wrap select {
-  width: 75px;
-  margin-top: 5px;
-  height: 45px;
-  padding-left: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background: #fff;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.input-birth-wrap p {
-  line-height: 60px;
-  padding: 0 5px;
-}
-
-.field_with_errors {
-  display: contents;
-}
-
-
-.form-bottom-text {
-  font-size: 15px;
-  margin-top: 10px;
-  text-align: center;
-}
-
-.form-bottom-text:last-child {
-  margin: 0;
-  padding-bottom: 50px;
-}
-
-.form-bottom-text>span {
-  color: #0099e8;
-  cursor: pointer;
-}
-
 .register-btn {
   width: 50%;
-  margin: 0 auto;
+  margin: 50px auto;
 }
 
 .register-red-btn {
@@ -143,9 +84,12 @@
   cursor: pointer;
 }
 
-.register-info {
-  margin: 30px 180px 0 0;
-  color: #0099e8;
-  text-align: right;
-  cursor: pointer;
+.indispensable {
+  background: #ea352d;
+  margin-left: 8px;
+  padding: 3px;
+  border-radius: 2px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
 }
