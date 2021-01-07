@@ -1,6 +1,6 @@
 class RecommendationsController < ApplicationController
   def index
-    get_tweet
+    @test = get_tweet
   end
 
   private
@@ -20,7 +20,8 @@ class RecommendationsController < ApplicationController
     search_url = "https://api.twitter.com/2/tweets/search/recent"
 
     # Set the query value here. Value can be up to 512 characters
-    query = "(ディズニーランド オススメ) OR (ディズニーランド おすすめ) OR (ディズニーランド お勧め)"
+    # query = "((ディズニーランド オススメ) OR (ディズニーランド おすすめ) OR (ディズニーランド お勧め)) -is:retweet"
+    query = "(東京駅 おすすめ) -is:retweet -is:quote -has:mentions has:images"
 
     # Add or remove parameters below to adjust the query and response fields within the payload
     # See docs for list of param options: https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-recent

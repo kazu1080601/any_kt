@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
   devise_for :users
-  get 'recommendations/index'
+  resources :recommendations, only: [:index]
   root to: "recommendations#index"
 end
