@@ -1,11 +1,11 @@
 class RecommendationsController < ApplicationController
   def index
-    @test = get_tweet
+    @test = get_tweet(params[:search_list])
   end
 
   private
 
-  def get_tweet
+  def get_tweet (search_list)
     # This script uses your bearer token to authenticate and make a Search request
 
     require 'json'

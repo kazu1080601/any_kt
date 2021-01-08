@@ -134,7 +134,6 @@ function startNearbySearch(latLng){
   const genreSelect = document.getElementById("genreInput");
   const genreInput = genreSelect.options[genreSelect.selectedIndex].value;
   
-  debugger
   //周辺検索
   service.nearbySearch(  // nearbySearchは、PlacesServiceクラスのメソッド。
     {
@@ -189,8 +188,20 @@ function displayResults(results, status, pagination) {
     
     //pagination.hasNextPage==falseになったら
     //全ての情報が取得できているので、
-    //結果を表示する
+    //店名を抽出し、コントローラーに渡す
     } else {
+      let searchList = {};
+      for (let i = 0; i < placesList.length; i++) {
+        searchList[`name${i}`] = placesList[i].name;
+      }
+      $.ajax({
+        url: "/recommendations",
+        type: "GET",
+        data: { "search_list": searchList },
+        // success: (test) => {returnTest = test;}  コントローラーからJavaScriptへのデータ返却は未実装
+        // error: (test) => {alert("error");}
+      })
+
             
                           // ココを編集中
 
