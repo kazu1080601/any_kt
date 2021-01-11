@@ -1,66 +1,71 @@
 class RecommendationsController < ApplicationController
   def index
-    @test = get_tweet(params[:search_list])
+    return_list = get_tweet(params[:search_list])
+    render json: { returnList: return_list} unless return_list == nil
   end
 
   private
 
-  def get_tweet (search_list)
-    # This script uses your bearer token to authenticate and make a Search request
+  def get_tweet (search_list_params)
+    return if search_list_params == nil
 
+    # TwitterAPIのサンプルコードに従い記述
     require 'json'
     require 'typhoeus'
 
-    # The code below sets the bearer token from your environment variables
-    # To set environment variables on Mac OS X, run the export command below from the terminal:
-    # export BEARER_TOKEN='YOUR-TOKEN'
+    # ベアラートークンを設定
     bearer_token = ENV["BEARER_TOKEN"]
 
-    # Endpoint URL for the Recent Search API
+    # 「Recent Search API」のエンドポイントURL
     search_url = "https://api.twitter.com/2/tweets/search/recent"
 
-    # Set the query value here. Value can be up to 512 characters
-    # query = "((ディズニーランド オススメ) OR (ディズニーランド おすすめ) OR (ディズニーランド お勧め)) -is:retweet"
-    query = "(東京駅 おすすめ) -is:retweet -is:quote -has:mentions has:images"
+    # paramsに含まれる検索ワードをハッシュとして取出
+    search_list = search_list_params.to_unsafe_h
 
-    # Add or remove parameters below to adjust the query and response fields within the payload
-    # See docs for list of param options: https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-recent
-    query_params = {
+    response_arr = {}
+
+    search_list.each_value do |name|
+
+      # ツイート検索のクエリを設定（-is:retweet=>リツイートは除く  -is:quote=>引用ツイートは除く  -has:links=>リンクを含むツイートは除く）
+      query = "(#{name.gsub(' ', ' OR ')}) おすすめ -is:retweet -is:quote -has:links"
+
+      # クエリパラメータを設定
+      # "tweet.fields"のpossiby_sensitiveは、ツイートにリンクが含まれる場合にのみ結果が表示される。
+      query_params = {
       "query": query, # Required
       "max_results": 10,
-      # "start_time": "2020-07-01T00:00:00Z",
-      # "end_time": "2020-07-02T18:00:00Z",
-      # "expansions": "attachments.poll_ids,attachments.media_keys,author_id",
-      "tweet.fields": "attachments,author_id,conversation_id,created_at,entities,id,lang",
-      "user.fields": "description"
-      # "media.fields": "url", 
-      # "place.fields": "country_code",
-      # "poll.fields": "options"
-    }
-
-    def search_tweets(url, bearer_token, query_params)
-      options = {
-        method: 'get',
-        headers: {
-          "User-Agent": "v2RecentSearchRuby",
-          "Authorization": "Bearer #{bearer_token}"
-        },
-        params: query_params
+      "tweet.fields": "text,geo",
+      "place.fields": "geo,name,place_type"
       }
 
-      request = Typhoeus::Request.new(url, options)
-      response = request.run
-
-      return response
+      response = search_tweets(search_url, bearer_token, query_params)
+      # puts response.code, JSON.pretty_generate(JSON.parse(response.body))
+      # 数値で比較すると条件分岐がうまく機能しないため、文字列に変換してから比較
+      if JSON.parse(response.body)["meta"]["result_count"].to_s == "0"
+      else
+        response_arr.store(name,JSON.parse(response.body)["data"])
+        response_arr[name].each do |data|
+          data.delete("id")
+        end
+      end
     end
-
-    response = search_tweets(search_url, bearer_token, query_params)
-    puts response.code, JSON.pretty_generate(JSON.parse(response.body))
-    @test = response.code, JSON.pretty_generate(JSON.parse(response.body))
-    @test2 = response.code
-    @test3 = response.body
-
+    return response_arr
   end
 
+  def search_tweets(url, bearer_token, query_params)
+    options = {
+      method: 'get',
+      headers: {
+        "User-Agent": "v2RecentSearchRuby",
+        "Authorization": "Bearer #{bearer_token}"
+      },
+      params: query_params
+    }
 
+    request = Typhoeus::Request.new(url, options)
+    response = request.run
+
+    return response
+
+  end
 end
