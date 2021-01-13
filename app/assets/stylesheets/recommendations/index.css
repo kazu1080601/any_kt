@@ -4,6 +4,7 @@
 
 .main-area{
   display: flex;
+  justify-content: space-between;
   margin: 0 150px;
   height: 500px;
 }
@@ -28,4 +29,17 @@
 
 #genreInput{
   width: 100px;
+}
+
+#shop-name{
+  font-size: 30px;
+}
+
+#tweet-results{
+  margin: 10px;
+}
+
+.tweet{
+  margin: 30px;
+  border: 1px dotted;
 }

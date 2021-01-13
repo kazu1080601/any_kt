@@ -272,7 +272,7 @@ function displayResults(results, status, pagination) {
           
           //クリック時にMapにマーカー表示するようにAタグを作成
           resultHTML += "<li>";
-          resultHTML += "<a href=# id=resultlist" + i + ">" + content + "</a>"
+          resultHTML += "<a href=\"/recommendations/" + i + "\" id=resultlist" + i + ">" + content + "</a>"
           // resultHTML += "<a href=\"javascript: void(0);\"";
           // resultHTML += " onclick=\"createMarker(";
           // resultHTML += "'" + place.name + "',";
@@ -313,7 +313,7 @@ function displayResults(results, status, pagination) {
                 placeId = placesList[k].place_id;
               }
             }
-            const shopHTML = "<a href=\"/recommendations/new/?shop_name=" + resultList[num].name + "&place_id=" + placeId + "\">" + resultList[num].name + "</a>";
+            const shopHTML = "<a href=\"/recommendations/" + num + "/?shop_name=" + resultList[num].name + "&place_id=" + placeId + "\">" + resultList[num].name + "</a>";
             let tweetHTML = "<ol>"
             for (let j = 0; j < resultList[num].tweets.length; j++) {
               tweetHTML += "<li class=\"tweet\">"

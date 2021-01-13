@@ -4,6 +4,36 @@ class RecommendationsController < ApplicationController
     render json: { returnList: return_list} unless return_list == nil
   end
 
+  def show
+  end
+
+  def new
+    @shop_name = params[:shop_name]
+    @place_id = params[:place_id]
+    # @genre_id =
+    @valuation = Valuation.new
+  end
+
+  def create
+    @valuation = Valuation.new(valuation_params)
+    if @valuation.save
+      redirect_to root_path
+    else
+      render :new
+    end
+  end
+
+  def search
+    # @tweets = params[:result_show]
+    # redirect_to recommendation_path
+    # binding.pry
+    # show
+    # redirect_to root_path
+    # binding.pry
+    # render("recommendations/show")
+    # (result_show: params[:result_show])
+  end
+
   private
 
   def get_tweet (search_list_params)
@@ -68,4 +98,10 @@ class RecommendationsController < ApplicationController
     return response
 
   end
+
+  def valuation_params
+    params.require(:valuation).permit(:image, :comment, :date, :genre_id, :place_id).merge(user_id: current_user.id)
+  end
+
+
 end

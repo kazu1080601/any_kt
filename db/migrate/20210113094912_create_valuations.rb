@@ -5,7 +5,7 @@ class CreateValuations < ActiveRecord::Migration[6.0]
       t.date        :date,      null: false
       t.integer     :genre_id,  null: false
       t.string      :place_id,  null: false
-      # t.references  :user,      foreign_key: true
+      t.references  :user,      foreign_key: true
       t.timestamps
     end
   end
