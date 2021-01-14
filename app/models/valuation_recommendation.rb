@@ -1,4 +1,4 @@
-class ValuationRecommend < ApplicationRecord
+class ValuationRecommendation < ApplicationRecord
   belongs_to :valuation
   # belongs_to :recommend
 end

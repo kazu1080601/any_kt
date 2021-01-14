@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_13_100618) do
+ActiveRecord::Schema.define(version: 2021_01_13_110704) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -48,6 +48,14 @@ ActiveRecord::Schema.define(version: 2021_01_13_100618) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "valuation_recommendations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "valuation_id"
+    t.integer "recommend_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["valuation_id"], name: "index_valuation_recommendations_on_valuation_id"
+  end
+
   create_table "valuation_recommends", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "valuation_id"
     t.integer "recommend_id", null: false
@@ -68,6 +76,7 @@ ActiveRecord::Schema.define(version: 2021_01_13_100618) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "valuation_recommendations", "valuations"
   add_foreign_key "valuation_recommends", "valuations"
   add_foreign_key "valuations", "users"
 end

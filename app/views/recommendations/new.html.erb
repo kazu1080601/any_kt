@@ -66,6 +66,9 @@
   </div>
 </div>
 
+<%# ActiveHash表示テスト %>
+<p><%= Recommendation.find(2).name %>
+
 <div class="comment-area">
   <%= form_with model: @valuation, url:recommendations_path, local: true do |f| %>
     <p>
@@ -87,6 +90,7 @@
     <%= f.hidden_field :place_id, id:"place-id", value:@place_id %>
     <%= f.submit "コメントを保存" ,class:"submit-btn" %>
 
+<%# エラー表示　表示位置は仮 %>
     <% if f.object.errors.any? %>
     <div class="error-alert">
       <ul>
