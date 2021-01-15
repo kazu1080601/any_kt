@@ -75,6 +75,10 @@
     <%= f.hidden_field :genre_id, id:"genre-id", value:1 %>
     <%# place_idは自動入力。非表示 %>
     <%= f.hidden_field :place_id, id:"place-id", value:@place_id %>
+    <%# 緯度はこのページで検索した結果を自動入力。非表示 %>
+    <%= f.hidden_field :latitude, id:"latitude" %>
+    <%# 経度はこのページで検索した結果を自動入力。非表示 %>
+    <%= f.hidden_field :longitude, id:"longitude" %>
 
     <div class="recommendation-area">
       <div>
@@ -114,7 +118,7 @@
     </div>
 
 
-<%# エラー表示　表示位置は仮 %>
+<%# エラー表示  表示位置は仮 %>
     <% if f.object.errors.any? %>
     <div class="error-alert">
       <ul>
@@ -153,6 +157,7 @@ function getPlaces(){
         //取得した緯度・経度を使ってマーカー表示 地図が上書きされてしまうため、「placeDetail」より後に「createMaker」を動かす
         placeDetail(results[0].geometry.location);
         createMarker(results[0].geometry.location.lat(), results[0].geometry.location.lng());  // 「results」は配列だが、1つしかデータが入っていない .geometry.locationは、緯度/経度座標を表す
+        saveLatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng());
       }
       else {
         alert(addressInput + "：位置情報が取得できませんでした。");
@@ -246,5 +251,18 @@ $(function() {
     selectOtherMonths: true //他の月を選択可能
   });
 });
+
+// 対象施設の緯度経度を検索した結果をDBに登録するための処理
+$(function() {
+  $('#latitude').attr('value', `${lat}`);
+  $('#longitude').attr('value', `${lng}`);
+});
+
+function saveLatLng(lat, lng) {
+  $(function() {
+    $('#latitude').attr('value', `${lat}`);
+    $('#longitude').attr('value', `${lng}`);
+  });
+}
 
 </script>

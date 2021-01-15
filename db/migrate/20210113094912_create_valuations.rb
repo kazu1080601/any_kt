@@ -6,6 +6,8 @@ class CreateValuations < ActiveRecord::Migration[6.0]
       t.integer     :genre_id,           null: false
       t.string      :place_id,           null: false
       t.integer     :recommendation_id,  null: false
+      t.decimal     :latitude,           null: false, precision:10, scale:7
+      t.decimal     :longitude,          null: false, precision:10, scale:7
       t.references  :user,               foreign_key: true
       t.timestamps
     end

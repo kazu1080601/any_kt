@@ -2,13 +2,13 @@
 
 ## usersテーブル
 
-| Column             | Type       | Options                        |
-| ------------------ | ---------- | ------------------------------ |
-| nickname           | string     | null: false                    |
-| email              | string     | null: false                    |
-| encrypted_password | string     | null: false                    |
-| prefecture_id      | integer    | null: false                    |
-| city               | string     |                                |
+| Column             | Type       | Options                             |
+| ------------------ | ---------- | ----------------------------------- |
+| nickname           | string     | null: false                         |
+| email              | string     | null: false                         |
+| encrypted_password | string     | null: false                         |
+| prefecture_id      | integer    | null: false                         |
+| city               | string     |                                     |
 
 ### Association
 - has_many   :valuations
@@ -17,14 +17,16 @@
 
 ## valuationsテーブル
 
-| Column             | Type       | Options                        |
-| ------------------ | ---------- | ------------------------------ |
-| comment            | text       | null: false                    |
-| date               | date       | null: false                    |
-| genre_id           | integer    | null: false                    |
-| place_id           | string     | null: false                    |
-| recommendation_id  | integer    | null: false                    |
-| user               | references | foreign_key: true              |
+| Column             | Type       | Options                             |
+| ------------------ | ---------- | ----------------------------------- |
+| comment            | text       | null: false                         |
+| date               | date       | null: false                         |
+| genre_id           | integer    | null: false                         |
+| place_id           | string     | null: false                         |
+| recommendation_id  | integer    | null: false                         |
+| latitude           | decimal    | null: false, precision:10, scale:7  |
+| longitude          | decimal    | null: false, precision:10, scale:7  |
+| user               | references | foreign_key: true                   |
 
 ### Association
 - belongs_to :user
