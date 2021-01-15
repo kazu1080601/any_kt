@@ -58,5 +58,6 @@ Rails.application.configure do
 
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
-  config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+  # herokuにアップロードできないため、コメントアウト（参考->https://stackoverflow.com/questions/44145293/heroku-rails-5-loaderror-could-not-load-the-listen-gem)
+  # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 end
