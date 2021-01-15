@@ -5,6 +5,14 @@
 <tr>
   <%# td要素はtable dataの略で、テーブルセルの内容を指定する。 %>
   <td>検索場所：</td><td><input type="text" id="addressInput" value="東京駅" style="width: 200px"></td>
+  <td style="padding-left: 50px;">Twitter検索ワード：</td>
+  <td>
+    <select id="tweetSearchWord">
+      <% (Recommendation.all.length - 1).times do |i| %>
+        <option value="<%= Recommendation.all.find(i + 2).id %>" selected><%= Recommendation.all.find(i + 2).name %></option>
+      <% end %>
+    <select>
+  </td>
   <td style="padding-left: 50px;">ジャンル：</td>
   <td>
     <select id="genreInput">
@@ -16,6 +24,8 @@
     <select>
   </td>
   <td style="padding-left: 50px;">KeyWord：</td><td><input type="text" id="keywordInput" value="寿司" style="width: 100px"></td>
+</tr>
+<tr>
   <td style="padding-left: 50px;">検索範囲：</td>
   <td>
     <select id="radiusInput">
@@ -126,6 +136,7 @@ function startNearbySearch(latLng){
   //入力したジャンルを取得
   const genreSelect = document.getElementById("genreInput");
   const genreInput = genreSelect.options[genreSelect.selectedIndex].value;
+
   
   //周辺検索
   service.nearbySearch(  // nearbySearchは、PlacesServiceクラスのメソッド。
@@ -156,7 +167,6 @@ function startNearbySearch(latLng){
 
 }
 
-
 /*
  周辺検索の結果表示
  ※nearbySearchのコールバック関数
@@ -186,6 +196,9 @@ function displayResults(results, status, pagination) {
       let searchList = {};
       let searchListName = []
       for (let i = 0; i < placesList.length; i++) {
+        if (i == 0) {
+          searchList["search_id"] = twitterSearchInput();
+        }
         searchList[`name${i}`] = placesList[i].name;
         searchListName[i] = placesList[i].name;
       }
@@ -214,7 +227,7 @@ function displayResults(results, status, pagination) {
         type: "GET",
         dataType: "json",
         // contentType: 'application/json'
-        data: { "search_list": searchList },
+        data: { "search_list": searchList, },
         success: function(returnList) {
           callback(returnList);
           }
@@ -453,6 +466,13 @@ function displayResults(results, status, pagination) {
     }
 
   }
+}
+
+//入力したTwitter検索ワードを取得
+function twitterSearchInput() {
+  const twitterSelect = document.getElementById("tweetSearchWord");
+  twitterInput = Number(twitterSelect.options[twitterSelect.selectedIndex].value);
+  return twitterInput;
 }
 
 function createMarker(name, vicinity, lat, lng){

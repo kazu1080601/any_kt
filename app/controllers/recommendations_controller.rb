@@ -52,12 +52,23 @@ class RecommendationsController < ApplicationController
     # paramsに含まれる検索ワードをハッシュとして取出
     search_list = search_list_params.to_unsafe_h
 
+    # Twitter検索ワードを抽出
+    search_word = ""
+    (Recommendation.all.length - 1).times do |i|
+      if search_list["search_id"].to_i == i + 2
+        search_word = Recommendation.all.find(i + 2).search
+      end
+    end
+    # 抽出したらTwitter検索ワードをハッシュから削除
+    search_list.delete("search_id")
+
     response_arr = {}
 
     search_list.each_value do |name|
 
       # ツイート検索のクエリを設定（-is:retweet=>リツイートは除く  -is:quote=>引用ツイートは除く  -has:links=>リンクを含むツイートは除く）
-      query = "(#{name.gsub(' ', ' OR ')}) おすすめ -is:retweet -is:quote -has:links"
+      query = "(#{name.gsub(' ', ' OR ')}) #{search_word} -is:retweet -is:quote -has:links"
+      puts query
 
       # クエリパラメータを設定
       # "tweet.fields"のpossiby_sensitiveは、ツイートにリンクが含まれる場合にのみ結果が表示される。
