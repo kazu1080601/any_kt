@@ -147,7 +147,7 @@ function startNearbySearch(latLng){
       keyword: keywordInput,
       language: 'ja'
     },
-    displayResults
+    displayResultsDb
   );
 
 
@@ -199,28 +199,11 @@ function displayResults(results, status, pagination) {
         if (i == 0) {
           searchList["search_id"] = twitterSearchInput();
         }
+        //コントローラーに渡すためオブジェクト形式で店名のリストを作成
         searchList[`name${i}`] = placesList[i].name;
+        //後でtweet検索の結果を配列に整理するのに、店名のリストを配列でも作成
         searchListName[i] = placesList[i].name;
       }
-
-      // $.ajax({
-      //   url: "/recommendations",
-      //   type: "GET",
-      //   dataType: "json",
-      //   // contentType: 'application/json'
-      //   data: { "search_list": searchList },
-      //   success: function(test1) {
-      //     callback(test1);
-      //     console.log(test1);
-      //     }
-      //   // success: (test1) => {console.log(test1)}
-      //   // error: (test) => {alert("error");}
-      // });
-
-      // function callback(response) {
-      //   const returnTest = response;
-      //   debugger
-      // }
 
       $.ajax({
         url: "/recommendations",
@@ -231,8 +214,7 @@ function displayResults(results, status, pagination) {
         success: function(returnList) {
           callback(returnList);
           }
-        // success: (test1) => {console.log(test1)}
-        // error: (test) => {alert("error");}
+        // error: () => {alert("error");}
       });
       //上記で「returnTest」にajaxの結果が入るのだが、その理由がよくわからない。参考URL：https://www.it-swarm-ja.tech/ja/jquery/jquery%E3%81%AFajax%E3%81%AE%E7%B5%90%E6%9E%9C%E3%82%92%E5%A4%96%E9%83%A8%E5%A4%89%E6%95%B0%E3%81%AB%E8%BF%94%E3%81%97%E3%81%BE%E3%81%99/1073552562/
 
@@ -343,91 +325,6 @@ function displayResults(results, status, pagination) {
         }
 
 
-
-
-
-
-        // const tweetsShow = {};
-        // const shops = {};
-        // for (let i = 0; i < resultList.length; i++) {
-        //   tweetsShow[`${i}`] = new Promise(function(resolve) {
-        //     shops[`${i}`] = document.getElementById(`resultlist${i}`)
-        //     shops[`${i}`].addEventListener('click', function(e) {
-        //       e.preventDefault();
-        //       resolve(i);
-        //     });
-        //   });
-        //   tweetsShow[`${i}`].then(function(num) {
-        //     let resultShow = {};
-        //     resultShow.name = resultList[num].name;
-        //     let count = 1;
-        //     resultList[num].tweets.forEach( function(tweet) {
-        //       resultShow[`tweet${count}`] = tweet
-        //       count++
-        //     });
-        //     debugger
-        //   });
-        // }
-        
-
-
-
-
-
-
-
-        // const tweetShow = new Promise(function(resolve){
-        //   const shops = {}
-        //   for (let i = 0; i < resultList.length; i++) {
-        //     shops[`${i}`] = document.getElementById(`resultlist${i}`)
-        //     shops[`${i}`].addEventListener('click', function(e) {
-        //       e.preventDefault();
-        //       resolve(i)
-        //     });
-        //   }
-
-        // });
-
-        // setInterval(() => {
-        //   const tweetShow = new Promise(function(resolve){
-        //   for (let i = 0; i < resultList.length; i++) {
-        //       const shop = document.getElementById(`resultlist${i}`)
-        //       shop.addEventListener('click', function(e) {
-        //         e.preventDefault();
-        //         resolve(i)
-        //       });
-        //     }
-        //   });
-        //   tweetShow.then(function(num) {
-        //     let resultShow = {};
-        //     resultShow.name = resultList[num].name;
-        //     let count = 1;
-        //     resultList[num].tweets.forEach( function(tweet) {
-        //       resultShow[`tweet${count}`] = tweet
-        //       count++
-        //   });
-        // }, 1000);
-
-
-        // const tweetShow = new Promise(function(resolve){
-        //   for (let i = 0; i < resultList.length; i++) {
-        //     const shop = document.getElementById(`resultlist${i}`)
-        //     shop.addEventListener('click', function(e) {
-        //       e.preventDefault();
-        //       resolve(i)
-        //     });
-        //   }
-        // });
-
-        // tweetShow.then(function(num) {
-        //   let resultShow = {};
-        //   resultShow.name = resultList[num].name;
-        //   let count = 1;
-        //   resultList[num].tweets.forEach( function(tweet) {
-        //     resultShow[`tweet${count}`] = tweet
-        //     count++
-        //   });
-
           // ツイート表示はshowアクションにする予定だったが、うまくいかなかったため保留。（検索結果をshowアクションにparamsで渡すまではうまくいったが、画面表示の際にアクションを再読み込みしてしまい、その処理ではツイートのデータが入っておらず、結果としてうまくツイートの情報を渡せなかった。
           // $.ajax({
           //   url: "/recommendations/0",
@@ -438,12 +335,6 @@ function displayResults(results, status, pagination) {
           //   success: () => { window.location.href = '/recommendations/0'; }
           //   error: (test) => {alert("error");}
           // });
-
-
-
-
-
-
 
       }
     }
@@ -468,47 +359,219 @@ function displayResults(results, status, pagination) {
   }
 }
 
+
+
+
+/*
+ 周辺検索の結果表示
+ ※nearbySearchのコールバック関数
+  results : 検索結果
+  status ： 実行結果ステータス
+  pagination : ページネーション
+*/
+function displayResultsDb(results, status, pagination) {
+  if(status == google.maps.places.PlacesServiceStatus.OK) {
+    //検索結果をplacesList配列に連結
+    placesList = placesList.concat(results);
+    
+    //pagination.hasNextPage==trueの場合、
+    //続きの検索結果あり
+    if (pagination.hasNextPage) {
+      
+      //pagination.nextPageで次の検索結果を表示する
+      // =>「pagination.nextPage」を実行すると、nearbySearchのコールバック関数が再び呼び出される（次の20件を表示）仕様になっている。
+      //※連続実行すると取得に失敗するので、
+      //1秒くらい間隔をおく
+      setTimeout(pagination.nextPage(), 1000);
+    
+    //pagination.hasNextPage==falseになったら
+    //全ての情報が取得できているので、
+    //店名を抽出し、コントローラーに渡す
+    } else {
+      let searchList = {};
+      let searchListName = []
+      for (let i = 0; i < placesList.length; i++) {
+        //コントローラーに渡すためオブジェクト形式で「place_id」のリストを作成
+        searchList[`${placesList[i].name}`] = placesList[i].place_id;
+        //後でDBから帰ってきた結果を配列に整理するのに、「place_id」のリストを配列でも作成
+        searchListName[i] = placesList[i].name;
+      }
+
+      $.ajax({
+        url: "/recommendations",
+        type: "GET",
+        dataType: "json",
+        // contentType: 'application/json'
+        data: { "search_list": searchList, },
+        success: function(returnList) {
+          callback(returnList);
+          }
+        // error: () => {alert("error");}
+      });
+      //上記で「returnTest」にajaxの結果が入るのだが、その理由がよくわからない。参考URL：https://www.it-swarm-ja.tech/ja/jquery/jquery%E3%81%AFajax%E3%81%AE%E7%B5%90%E6%9E%9C%E3%82%92%E5%A4%96%E9%83%A8%E5%A4%89%E6%95%B0%E3%81%AB%E8%BF%94%E3%81%97%E3%81%BE%E3%81%99/1073552562/
+
+      // DB検索の結果を新たに配列に整理。店ごとにオブジェクトを作成。オブジェクトには店名の"name"とDBに保存された対象のお店のデータ数の2要素。
+      function callback(response) {
+        const dbCountList = response.returnList;
+        let resultList = [];
+        (function () {
+          let j = 0;
+          for (let key of searchListName){
+            let result = {};
+            result.name = key;
+            result.count = dbCountList[`${key}`]
+            // if (dbCountList[`${key}`] == null) {
+            //   result.name = key;
+            //   result.tweets = [];
+            // } else {
+            //   let tweets = []
+            //   for (let i = 0; i < tweetList[`${key}`].length; i++) {
+            //     tweets[i] = tweetList[`${key}`][i].text;
+            //   }
+            //   result.name = key;
+            //   result.tweets = tweets;
+            // }
+            resultList.push(result);
+            // j++
+          }
+        })();
+
+        //tweetの数で降順ソート
+        resultList.sort(function(a,b){
+          if(a.count > b.count) return -1;
+          if(a.count > b.count) return 1;
+          return 0;
+        });
+
+        //resultList配列をループして、
+        //結果表示のHTMLタグを組み立てる
+        let resultHTML = "<ol>";
+
+        for (let i = 0; i < resultList.length; i++) {
+          place = resultList[i];
+
+          // if (tweetList[`${place.name}`] == null){
+          //   let content = "【" 0 "】 " + place.name;
+          // } else{
+          //   let content = "【`${tweetList[`${place.name}`].length}】 " + place.name;
+          // }
+          
+          //表示内容（ツイート数＋名称）
+          let content = "【" + `${place.count}` + "】 " + place.name;
+          
+          //クリック時にMapにマーカー表示するようにAタグを作成
+          resultHTML += "<li>";
+          resultHTML += "<a href=# id=resultlist" + i + ">" + content + "</a>"
+          // resultHTML += "<a href=\"javascript: void(0);\"";
+          // resultHTML += " onclick=\"createMarker(";
+          // resultHTML += "'" + place.name + "',";
+          // resultHTML += "'" + place.vicinity + "',";
+          // resultHTML += place.geometry.location.lat() + ",";
+          // resultHTML += place.geometry.location.lng() + ")\">";
+          // resultHTML += content;
+          // resultHTML += "</a>";
+          resultHTML += "</li>";
+        }
+
+        resultHTML += "</ol>";
+
+        //結果表示
+        document.getElementById("results").innerHTML = resultHTML;
+
+        //検索結果のクリックにより取得したツイートの一覧を表示
+        var tweetsShow = {};
+        var shops = {};
+        for (let i = 0; i < resultList.length; i++) {
+          setPromise(i)
+        }
+
+        function setPromise(i) {
+          //結果をクリックすると、ツイート一覧を作成するPromiseを結果の数ぶん作成
+          tweetsShow[`${i}`] = new Promise(function(resolve) {
+            shops[`${i}`] = document.getElementById(`resultlist${i}`)
+            shops[`${i}`].addEventListener('click', function(e) {
+              e.preventDefault();
+              resolve(i);
+            });
+          });
+          //クリックされた対象に関するツイートの一覧表示作成後、Promiseを再作成
+          tweetsShow[`${i}`].then(function(num) {
+            let placeId = {}
+            for (let k = 0; k < placesList.length; k++) {
+              if (resultList[num].name == placesList[k].name) {
+                placeId = placesList[k].place_id;
+              }
+            }
+            const shopHTML = "<a href=\"/recommendations/new/?shop_name=" + resultList[num].name + "&place_id=" + placeId + "\">" + resultList[num].name + "</a>";
+            let tweetHTML = "<ol>"
+            for (let j = 0; j < resultList[num].tweets.length; j++) {
+              tweetHTML += "<li class=\"tweet\">"
+              tweetHTML += resultList[num].tweets[j];
+              tweetHTML += "</li>"
+            }
+            tweetHTML += "</ol>"
+
+            document.getElementById("shop-name").innerHTML = shopHTML;
+            document.getElementById("tweet-results").innerHTML = tweetHTML;
+
+            setPromise(i)
+          });
+        }
+
+
+          // ツイート表示はshowアクションにする予定だったが、うまくいかなかったため保留。（検索結果をshowアクションにparamsで渡すまではうまくいったが、画面表示の際にアクションを再読み込みしてしまい、その処理ではツイートのデータが入っておらず、結果としてうまくツイートの情報を渡せなかった。
+          // $.ajax({
+          //   url: "/recommendations/0",
+          //   type: "GET",
+          //   dataType: "json",
+          //   contentType: 'application/json'
+          //   data: { "result_show": resultShow },
+          //   success: () => { window.location.href = '/recommendations/0'; }
+          //   error: (test) => {alert("error");}
+          // });
+
+      }
+    }
+  
+  } else {
+    //エラー表示
+    var results = document.getElementById("results");
+    if(status == google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+      results.innerHTML = "検索結果が0件です。";
+    } else if(status == google.maps.places.PlacesServiceStatus.ERROR) {
+      results.innerHTML = "サーバ接続に失敗しました。";
+    } else if(status == google.maps.places.PlacesServiceStatus.INVALID_REQUEST) {
+      results.innerHTML = "リクエストが無効でした。";
+    } else if(status == google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+      results.innerHTML = "リクエストの利用制限回数を超えました。";
+    } else if(status == google.maps.places.PlacesServiceStatus.REQUEST_DENIED) {
+      results.innerHTML = "サービスが使えない状態でした。";
+    } else if(status == google.maps.places.PlacesServiceStatus.UNKNOWN_ERROR) {
+      results.innerHTML = "原因不明のエラーが発生しました。";
+    }
+
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //入力したTwitter検索ワードを取得
 function twitterSearchInput() {
   const twitterSelect = document.getElementById("tweetSearchWord");
   twitterInput = Number(twitterSelect.options[twitterSelect.selectedIndex].value);
   return twitterInput;
-}
-
-function createMarker(name, vicinity, lat, lng){
-  
-  //マーカー表示する位置のMap表示
-  var map = new google.maps.Map(document.getElementById("mapArea"), {
-    zoom: 15,
-    center: new google.maps.LatLng(lat, lng),
-  });
-  
-  //マーカー表示
-  var marker = new google.maps.Marker({
-    map: map,
-    position: new google.maps.LatLng(lat, lng)
-  });
-  
-  //情報窓の設定
-  var info = "<div style=\"min-width: 100px\">";
-  info += name + "<br />";
-  info += vicinity + "<br />";
-  info += "<a href=\"https://maps.google.co.jp/maps?q=" + encodeURIComponent(name + " " + vicinity) + "&z=15&iwloc=A\"";
-  info += " target=\"_blank\">⇒詳細表示</a><br />";
-  info += "<a href=\"https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lng + "\"";
-  info += " target=\"_blank\">⇒ここへ行く</a>";
-  info += "</div>";
-  
-  //情報窓の表示
-  var infoWindow = new google.maps.InfoWindow({
-    content: info
-  });
-  infoWindow.open(map, marker);
-  
-  //マーカーのクリック時にも情報窓を表示する
-  marker.addListener("click", function(){
-    infoWindow.open(map, marker);
-  });
 }
 
 </script>

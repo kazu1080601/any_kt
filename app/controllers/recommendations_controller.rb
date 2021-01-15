@@ -1,6 +1,7 @@
 class RecommendationsController < ApplicationController
   def index
-    return_list = get_tweet(params[:search_list])
+    return_list = get_db(params[:search_list])
+    # return_list = get_tweet(params[:search_list])
     render json: { returnList: return_list} unless return_list == nil
   end
 
@@ -62,7 +63,7 @@ class RecommendationsController < ApplicationController
     # 抽出したらTwitter検索ワードをハッシュから削除
     search_list.delete("search_id")
 
-    response_arr = {}
+    response_hash = {}
 
     search_list.each_value do |name|
 
@@ -84,13 +85,13 @@ class RecommendationsController < ApplicationController
       # 数値で比較すると条件分岐がうまく機能しないため、文字列に変換してから比較
       if JSON.parse(response.body)["meta"]["result_count"].to_s == "0"
       else
-        response_arr.store(name,JSON.parse(response.body)["data"])
-        response_arr[name].each do |data|
+        response_hash.store(name,JSON.parse(response.body)["data"])
+        response_hash[name].each do |data|
           data.delete("id")
         end
       end
     end
-    return response_arr
+    return response_hash
   end
 
   def search_tweets(url, bearer_token, query_params)
@@ -108,6 +109,24 @@ class RecommendationsController < ApplicationController
 
     return response
 
+  end
+
+  def get_db (search_list_params)
+    return if search_list_params == nil
+
+    # paramsに含まれる「place_id」をハッシュとして取出
+    search_list = search_list_params.to_unsafe_h
+
+    # DBからデータを抽出
+    valuations = Valuation.all
+
+    response_hash = {}
+    search_list.each do |place|
+      hit_num = Valuation.where(place_id: "#{place[1]}").length  # place[0]に店名が、place[1]にplace_idが入っている
+      response_hash.store("#{place[0]}", hit_num)
+    end
+
+    return response_hash
   end
 
   def valuation_params
