@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ValuationRecommendTest < ActiveSupport::TestCase
+class RecommendationTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

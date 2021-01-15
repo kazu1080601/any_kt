@@ -1,0 +1,250 @@
+<%= render "shared/header" %>
+
+<table class="search-area">
+<%# tr要素はTable Rowの略で、テーブルの行を記述する。 %>
+<tr>
+  <%# td要素はtable dataの略で、テーブルセルの内容を指定する。 %>
+  <td>検索場所：</td><td><input type="text" id="addressInput" value="東京駅" style="width: 200px"></td>
+  <td style="padding-left: 50px;">ジャンル：</td>
+  <td>
+    <select id="genreInput">
+    <option value="restaurant" selected>レストラン</option>
+    <option value="cafe">カフェ</option>
+    <option value="park">公園</option>
+    <option value="amusement_park">遊園地</option>
+    <option value="shopping_mall">ショッピングモール</option>
+    <select>
+  </td>
+  <td style="padding-left: 50px;">KeyWord：</td><td><input type="text" id="keywordInput" value="寿司" style="width: 100px"></td>
+  <td style="padding-left: 50px;">検索範囲：</td>
+  <td>
+    <select id="radiusInput">
+    <option value="200" selected>200 m</option>
+    <option value="500">500 m</option>
+    <option value="800">800 m</option>
+    <option value="1000">1 km</option>
+    <option value="1500">1.5 km</option>
+    <option value="2000">2 km</option>
+    <select>
+  </td>
+  <td style="padding-left: 50px">
+    <input type="button" style="width: 50px; height: 30px;" value="検索" onclick="getPlaces();">
+  </td>
+</tr>
+</table>
+
+<div class="main-area">
+  <div id="mapAreaInNew"></div>
+  <div>
+    店舗情報<br />
+    <table border="1" style="border-collapse: collapse">
+      <tr>
+        <td class="detail-table-left">店名</td>
+        <td class="detail-table-right" id="detail-name"></td>
+      </tr>
+      <tr>
+        <td class="detail-table-left">google評価</td>
+        <td class="detail-table-right" id="detail-rating"></td>
+      </tr>
+      <tr>
+        <td class="detail-table-left">住所</td>
+        <td class="detail-table-right" id="detail-address"></td>
+      </tr>
+      <tr>
+        <td class="detail-table-left">電話番号</td>
+        <td class="detail-table-right" id="detail-phone"></td>
+      </tr>
+      <tr>
+        <td class="detail-table-left">営業時間</td>
+        <td class="detail-table-right" id="detail-opening"></td>
+      </tr>
+      <tr>
+        <td class="detail-table-left">ウェブサイト</td>
+        <td class="detail-table-right" id="detail-website"></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+<div class="valuation-area">
+  <div class="valuation-title">このお店は・・・</div>
+  <div class="form-area">
+    <%= form_with model: @valuation, url: recommendations_path, id: "recommendation-form", local: true do |f| %>
+    <%# ジャンルは自動入力。非表示 indexから自動で受け取るように要修正%>
+    <%= f.hidden_field :genre_id, id:"genre-id", value:1 %>
+    <%# place_idは自動入力。非表示 %>
+    <%= f.hidden_field :place_id, id:"place-id", value:@place_id %>
+
+    <div class="recommendation-area">
+      <div>
+        <%# label要素にクラスを指定すると、色を変えるjQueryの操作が効かない。おそらく、子要素に対するチェック動作が働いているため？（試しに、label要素にクラスを指定し、jQueryでpreventDefaultを記述すると、色は変わるがチェックはつかない） %>
+        <label>
+          <span class="btn active"><%= Recommendation.find(2).name %></span>
+          <%= f.radio_button :recommendation_id, 2, checked: true, class:'hidden' %>
+        </label>
+      </div>
+      <div>
+        <label>
+          <span class="btn"><%= Recommendation.find(3).name %></span>
+          <%= f.radio_button :recommendation_id, 3, class:'hidden' %>
+        </label>
+      </div>
+      <div>
+        <label>
+          <span class="btn"><%= Recommendation.find(4).name %></span>
+          <%= f.radio_button :recommendation_id, 4, class:'hidden' %>
+        </label>
+      </div>
+    </div>
+
+    <div class="comment-area">
+      <%= f.text_area :comment, id:"comment-text", placeholder:"感想を残しておきましょう" %>
+    </div>
+    <div class="date-area">
+      <p>訪問年月日： <%= f.date_select :date, {use_month_numbers: true}%></p>
+      <%# <p>訪問年月日: <input type="text" id="input1" /></p> %>
+    </div>
+    <div class="image-area">
+      <p>写真アップロード</p>
+      <div><%= f.file_field :image, id:"item-image" %></div>
+    </div>
+    <div class="submit-area">
+      <%= f.submit "コメントを保存" ,class:"submit-btn" %>
+    </div>
+
+
+<%# エラー表示　表示位置は仮 %>
+    <% if f.object.errors.any? %>
+    <div class="error-alert">
+      <ul>
+        <% f.object.errors.full_messages.each do |message| %>
+        <li class='error-message'><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+    <% end %>
+
+  <% end %>
+</div>
+
+
+<%# 「Map JavaScript API」から「Places API」を利用するために、「libraries=places」のパラメータが必要 %>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLEMAP_API_KEY'] %>&libraries=places&callback=getPlaces" async defer></script>
+<script type="text/javascript">
+
+//indexページから渡されたお店の名前を代入
+const shopName = '<%= @shop_name %>';
+const placeId = '<%= @place_id %>';
+let getDetail = {};
+
+/*
+ お店情報取得
+*/
+function getPlaces(){
+  //検索場所の位置情報を取得
+  const geocoder = new google.maps.Geocoder();
+  geocoder.geocode(
+    {
+      address: shopName
+    },
+    function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        //取得した緯度・経度を使ってマーカー表示 地図が上書きされてしまうため、「placeDetail」より後に「createMaker」を動かす
+        placeDetail(results[0].geometry.location);
+        createMarker(results[0].geometry.location.lat(), results[0].geometry.location.lng());  // 「results」は配列だが、1つしかデータが入っていない .geometry.locationは、緯度/経度座標を表す
+      }
+      else {
+        alert(addressInput + "：位置情報が取得できませんでした。");
+      }
+    }
+  );
+}
+
+function createMarker(lat, lng){
+  //マーカー表示する位置のMap表示
+  const map = new google.maps.Map(document.getElementById("mapAreaInNew"), {
+    zoom: 15,
+    center: new google.maps.LatLng(lat, lng),
+  });
+  
+  //マーカー表示
+  const marker = new google.maps.Marker({
+    map: map,
+    position: new google.maps.LatLng(lat, lng)
+  });
+}
+
+function placeDetail(latLng) {
+  //Mapインスタンス生成
+  const mapForDetail = new google.maps.Map(
+    document.getElementById("mapAreaInNew"),
+    {
+      zoom: 15,
+      center: latLng,
+    }
+  );
+  //PlacesServiceインスタンス生成
+  const service = new google.maps.places.PlacesService(mapForDetail);
+  //対象施設検索
+  service.getDetails(
+    {
+      placeId: placeId,
+      fields: ["address_components", "formatted_phone_number", "opening_hours", "rating", "url", "vicinity", "website"]
+    },
+    showDetails
+  );
+}
+
+function showDetails(result, status){
+  if(status == google.maps.places.PlacesServiceStatus.OK) {
+    //住所作成
+    let shopAddress = ""
+    for (let i = 0; i < result.address_components.length; i++) {
+      if (i != 0 && i != 1) {
+        shopAddress += result.address_components[result.address_components.length - i - 1].long_name;
+      }
+    }
+    document.getElementById("detail-name").innerHTML = shopName;
+    document.getElementById("detail-rating").innerHTML = result.rating;
+    document.getElementById("detail-address").innerHTML = shopAddress;
+    document.getElementById("detail-phone").innerHTML = result.formatted_phone_number;
+    document.getElementById("detail-opening").innerHTML = result.opening_hours.weekday_text[0] + "<br>" + result.opening_hours.weekday_text[1] + "<br>" + result.opening_hours.weekday_text[2] + "<br>" + result.opening_hours.weekday_text[3] + "<br>" + result.opening_hours.weekday_text[4] + "<br>" + result.opening_hours.weekday_text[5] + "<br>" + result.opening_hours.weekday_text[6];
+    document.getElementById("detail-website").innerHTML = result.website;
+  } else{
+    //エラー表示
+    var results = document.getElementById("results");
+    if(status == google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+      results.innerHTML = "検索結果が0件です。";
+    } else if(status == google.maps.places.PlacesServiceStatus.ERROR) {
+      results.innerHTML = "サーバ接続に失敗しました。";
+    } else if(status == google.maps.places.PlacesServiceStatus.INVALID_REQUEST) {
+      results.innerHTML = "リクエストが無効でした。";
+    } else if(status == google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+      results.innerHTML = "リクエストの利用制限回数を超えました。";
+    } else if(status == google.maps.places.PlacesServiceStatus.REQUEST_DENIED) {
+      results.innerHTML = "サービスが使えない状態でした。";
+    } else if(status == google.maps.places.PlacesServiceStatus.UNKNOWN_ERROR) {
+      results.innerHTML = "原因不明のエラーが発生しました。";
+    }
+  }
+}
+
+// ボタンクリックにより、classに「active」を追加するための記述。1つしか選択できないようにするため、ボタンクリック後一度「active」を削除する。
+$(function(){
+    $('.btn').on('click', function(event){
+        $('.btn').removeClass('active');
+        $(this).toggleClass('active');
+    });
+});
+
+// jQueryのDatepicker Widgetで、カレンダーから日付を入力するために追記 参考ページ=>https://itsakura.com/jquery-datepicker
+$(function() {
+  $.datepicker.setDefaults($.datepicker.regional["ja"]);
+  $("#input1").datepicker({
+    showOtherMonths: true, //他の月を表示
+    selectOtherMonths: true //他の月を選択可能
+  });
+});
+
+</script>

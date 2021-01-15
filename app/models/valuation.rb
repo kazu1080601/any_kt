@@ -1,6 +1,7 @@
 class Valuation < ApplicationRecord
-  has_many :valuation_recommends
-  # has_many :recommends, through: :valuation_recommends
-  # belongs_to :user
+  extend ActiveHash::Associations::ActiveRecordExtensions
+  belongs_to :recommendation
+  belongs_to :user
   # belongs_to :genre
+  has_one_attached :image
 end
