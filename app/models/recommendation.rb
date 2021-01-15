@@ -7,5 +7,5 @@ class Recommendation < ActiveHash::Base
   ]
 
   include ActiveHash::Associations
-  has_many :valuation_redommendations
+  has_many :valuations
 end

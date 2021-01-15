@@ -80,20 +80,20 @@
       <div>
         <%# label要素にクラスを指定すると、色を変えるjQueryの操作が効かない。おそらく、子要素に対するチェック動作が働いているため？（試しに、label要素にクラスを指定し、jQueryでpreventDefaultを記述すると、色は変わるがチェックはつかない） %>
         <label>
-          <span class="btn"><%= Recommendation.find(2).name %></span>
-          <%= f.check_box :recommendation_1, class:'hidden' %>
+          <span class="btn active"><%= Recommendation.find(2).name %></span>
+          <%= f.radio_button :recommendation_id, 2, checked: true, class:'hidden' %>
         </label>
       </div>
       <div>
         <label>
           <span class="btn"><%= Recommendation.find(3).name %></span>
-          <%= f.check_box :recommendation_2, class:'hidden' %>
+          <%= f.radio_button :recommendation_id, 3, class:'hidden' %>
         </label>
       </div>
       <div>
         <label>
           <span class="btn"><%= Recommendation.find(4).name %></span>
-          <%= f.check_box :recommendation_3, class:'hidden' %>
+          <%= f.radio_button :recommendation_id, 4, class:'hidden' %>
         </label>
       </div>
     </div>
@@ -230,9 +230,10 @@ function showDetails(result, status){
   }
 }
 
-// ボタンクリックにより、classに「active」を追加するための記述
+// ボタンクリックにより、classに「active」を追加するための記述。1つしか選択できないようにするため、ボタンクリック後一度「active」を削除する。
 $(function(){
     $('.btn').on('click', function(event){
+        $('.btn').removeClass('active');
         $(this).toggleClass('active');
     });
 });

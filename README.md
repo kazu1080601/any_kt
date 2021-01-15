@@ -23,21 +23,10 @@
 | date               | date       | null: false                    |
 | genre_id           | integer    | null: false                    |
 | place_id           | string     | null: false                    |
+| recommendation_id  | integer    | null: false                    |
 | user               | references | foreign_key: true              |
 
 ### Association
 - belongs_to :user
-- has_many   :valuation_recommends
-- belongs_to :genre
-
-
-## valuation-recommendsテーブル
-
-| Column             | Type       | Options                        |
-| ------------------ | ---------- | ------------------------------ |
-| valuation          | references | foreign_key: true              |
-| recommend_id       | integer    | null: false                    |
-
-### Association
 - belongs_to :valuation
-- belongs_to :recommend
+- belongs_to :genre

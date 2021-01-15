@@ -100,7 +100,7 @@ class RecommendationsController < ApplicationController
   end
 
   def valuation_params
-    params.require(:valuation).permit(:image, :comment, :date, :genre_id, :place_id).merge(user_id: current_user.id)
+    params.require(:valuation).permit(:image, :comment, :date, :genre_id, :place_id, :recommendation_id).merge(user_id: current_user.id)
   end
 
 
