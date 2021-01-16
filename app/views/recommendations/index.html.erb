@@ -54,7 +54,7 @@
 <div class="tweet-area">
   関連ツイート（直近7日間）
   <div id="shop-name"></div>
-  <div id="tweet-results"></div>
+  <div id="show-results"></div>
 </div>
 
 <%# 「Map JavaScript API」から「Places API」を利用するために、「libraries=places」のパラメータが必要 %>
@@ -318,7 +318,7 @@ function displayResults(results, status, pagination) {
             tweetHTML += "</ol>"
 
             document.getElementById("shop-name").innerHTML = shopHTML;
-            document.getElementById("tweet-results").innerHTML = tweetHTML;
+            document.getElementById("show-results").innerHTML = tweetHTML;
 
             setPromise(i)
           });
@@ -408,7 +408,7 @@ function displayResultsDb(results, status, pagination) {
           }
         // error: () => {alert("error");}
       });
-      //上記で「returnTest」にajaxの結果が入るのだが、その理由がよくわからない。参考URL：https://www.it-swarm-ja.tech/ja/jquery/jquery%E3%81%AFajax%E3%81%AE%E7%B5%90%E6%9E%9C%E3%82%92%E5%A4%96%E9%83%A8%E5%A4%89%E6%95%B0%E3%81%AB%E8%BF%94%E3%81%97%E3%81%BE%E3%81%99/1073552562/
+      //上記で「returnList」にajaxの結果が入るのだが、その理由がよくわからない。参考URL：https://www.it-swarm-ja.tech/ja/jquery/jquery%E3%81%AFajax%E3%81%AE%E7%B5%90%E6%9E%9C%E3%82%92%E5%A4%96%E9%83%A8%E5%A4%89%E6%95%B0%E3%81%AB%E8%BF%94%E3%81%97%E3%81%BE%E3%81%99/1073552562/
 
       // DB検索の結果を新たに配列に整理。店ごとにオブジェクトを作成。オブジェクトには店名の"name"とDBに保存された対象のお店のデータ数の2要素。
       function callback(response) {
@@ -420,6 +420,7 @@ function displayResultsDb(results, status, pagination) {
             let result = {};
             result.name = key;
             result.count = dbCountList[`${key}`]
+            result.id = searchList[`${key}`]
             // if (dbCountList[`${key}`] == null) {
             //   result.name = key;
             //   result.tweets = [];
@@ -436,7 +437,7 @@ function displayResultsDb(results, status, pagination) {
           }
         })();
 
-        //tweetの数で降順ソート
+        //DBに保存されたデータの数で降順ソート
         resultList.sort(function(a,b){
           if(a.count > b.count) return -1;
           if(a.count > b.count) return 1;
@@ -478,43 +479,53 @@ function displayResultsDb(results, status, pagination) {
         //結果表示
         document.getElementById("results").innerHTML = resultHTML;
 
-        //検索結果のクリックにより取得したツイートの一覧を表示
-        var tweetsShow = {};
+        //検索結果のクリックによりDBからコメントの一覧を取得する
+        var valuationsShow = {};
         var shops = {};
         for (let i = 0; i < resultList.length; i++) {
-          setPromise(i)
+          setPromiseDb(i)
         }
 
-        function setPromise(i) {
+        function setPromiseDb(i) {
           //結果をクリックすると、ツイート一覧を作成するPromiseを結果の数ぶん作成
-          tweetsShow[`${i}`] = new Promise(function(resolve) {
+          valuationsShow[`${i}`] = new Promise(function(resolve) {
             shops[`${i}`] = document.getElementById(`resultlist${i}`)
             shops[`${i}`].addEventListener('click', function(e) {
               e.preventDefault();
               resolve(i);
             });
           });
-          //クリックされた対象に関するツイートの一覧表示作成後、Promiseを再作成
-          tweetsShow[`${i}`].then(function(num) {
-            let placeId = {}
-            for (let k = 0; k < placesList.length; k++) {
-              if (resultList[num].name == placesList[k].name) {
-                placeId = placesList[k].place_id;
+          //クリックされた対象に関するコメントをDBから取得し一覧表示した後、Promiseを再作成
+          valuationsShow[`${i}`].then(function(num) {
+
+            $.ajax({
+              url: "/recommendations/search",
+              type: "GET",
+              dataType: "json",
+              data: { "shop_name": resultList[i], },
+              success: function(shopNameValuation) {
+                callback(shopNameValuation);
+                }
+              // error: () => {alert("error");}
+            });
+
+            function callback(response) {
+              const valuationResult = response.shopNameValuation;
+
+              // 変数名要修正
+              const shopHTML = "<a href=\"/recommendations/new/?shop_name=" + valuationResult[0].name + "&place_id=" + valuationResult[0].place_id + "\">" + valuationResult[0].name + "</a>";
+              let tweetHTML = "<ol>"
+              for (let j = 0; j < (valuationResult.length - 1); j++) {
+                tweetHTML += "<li class=\"tweet\">"
+                tweetHTML += valuationResult[j + 1].comment;
+                tweetHTML += "</li>"
               }
-            }
-            const shopHTML = "<a href=\"/recommendations/new/?shop_name=" + resultList[num].name + "&place_id=" + placeId + "\">" + resultList[num].name + "</a>";
-            let tweetHTML = "<ol>"
-            for (let j = 0; j < resultList[num].tweets.length; j++) {
-              tweetHTML += "<li class=\"tweet\">"
-              tweetHTML += resultList[num].tweets[j];
-              tweetHTML += "</li>"
-            }
-            tweetHTML += "</ol>"
+              tweetHTML += "</ol>"
 
-            document.getElementById("shop-name").innerHTML = shopHTML;
-            document.getElementById("tweet-results").innerHTML = tweetHTML;
-
-            setPromise(i)
+              document.getElementById("shop-name").innerHTML = shopHTML;
+              document.getElementById("show-results").innerHTML = tweetHTML;
+            }
+            setPromiseDb(i)
           });
         }
 
