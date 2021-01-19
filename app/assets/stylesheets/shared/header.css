@@ -13,13 +13,6 @@ header{
   margin: 10px;
 }
 
-.header-right{
-  /* display: flex;
-  justify-content: flex-end;
-  align-items: center; */
-  /* width: 300px; */
-}
-
 .header-button{
   text-decoration: none;
   color: #333333;
