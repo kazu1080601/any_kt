@@ -1,0 +1,41 @@
+.img-area{
+  width: 800px;
+  height: 500px;
+  position: relative;
+  margin: auto;
+}
+
+.root-img1{
+  position: absolute;
+  top: 30px;
+  left: -100px;
+  height: 300px;
+}
+
+.root-img2{
+  position: absolute;
+  top: 200px;
+  left: 250px;
+  height: 300px;
+}
+
+.root-img3{
+  position: absolute;
+  top: 125px;
+  left: 500px;
+  height: 300px;
+}
+
+.root-concept{
+  position: absolute;
+  top: 500px;
+  margin: auto;
+}
+
+.root-logo{
+  position: absolute;
+  top: 200px;
+  left: calc(800px / 2 - 400px / 2);
+  height: 200px;
+  width: 400px;
+}

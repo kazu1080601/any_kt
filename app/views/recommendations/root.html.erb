@@ -1,0 +1,59 @@
+<div class="img-area">
+  <%= image_tag "shopping.jpg", class: "root-img1" %>
+  <%= image_tag "eating.jpg", class: "root-img2" %>
+  <%= image_tag "playing.jpg", class: "root-img3" %>
+  <%= image_tag "concept.PNG", class: "root-concept" %>
+  <%= image_tag "logo.jpg", class: "root-logo" %>
+</div>
+
+<script>
+
+$(function() {
+  $('.root-img1').hide()
+  $('.root-img2').hide()
+  $('.root-img3').hide()
+  $('.root-logo').hide()
+  $('.root-img1').fadeIn(1000);
+  setTimeout(function() {
+    $('.root-img1').fadeOut(1000);
+  },1200);
+  setTimeout(function() {
+    $('.root-img2').fadeIn(1000);
+  },1700);
+  setTimeout(function() {
+    $('.root-img2').fadeOut(1000);
+  },2900);
+  setTimeout(function() {
+    $('.root-img3').fadeIn(1000);
+  },3400);
+  setTimeout(function() {
+    $('.root-img3').fadeOut(1000);
+  },4600);
+  setTimeout(function() {
+    $('.root-logo').fadeIn(1000);
+  },4600);
+  setTimeout(function() {
+    window.location.href = '/recommendations';
+  },6000)
+
+})
+
+
+// $(function() {
+//   $('.root-img1').hide();
+//   $('.root-img12').hide();
+//   $.when(
+//     $('.root-img1').fadeIn(2000),
+//     setTimeout(function() {
+//       $('.root-img1').fadeOut(2000);
+//     },3000)
+//   ).done(function() {
+//     $('.root-img12').fadeIn(2000);
+//     setTimeout(function() {
+//       $('.root-img12').fadeOut(2000);
+//     },3000);
+//   })
+// })
+ 
+
+</script>
