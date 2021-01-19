@@ -13,40 +13,86 @@ header{
   margin: 10px;
 }
 
-.header-center{
-  background-color: brown;
-  width: 100%;
-}
-
-.header-message{
-  height: 80px;
-  width: 100%;
-  margin: 10px 0;
-}
-
 .header-right{
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 300px;
+  /* display: flex;
+  justify-content: flex-end;
+  align-items: center; */
+  /* width: 300px; */
 }
 
-.user-nickname{
+.header-button{
   text-decoration: none;
   color: #333333;
 }
 
-.logout{
-  text-decoration: none;
-  color: #333333;
+
+/* ボタンの装飾は右記のサイトを参考に作成 https://jajaaan.co.jp/css/button/ */
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: inherit;
+  box-sizing: inherit;
 }
 
-.login{
-  text-decoration: none;
-  color: #333333;
+html {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 62.5%;/*rem算出をしやすくするために*/
 }
 
-.sign-up{
+a.header-btn{
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.5;
+  position: relative;
+  display: inline-block;
+  padding: 1rem 4rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  text-align: center;
+  vertical-align: middle;
   text-decoration: none;
-  color: #333333;
+  letter-spacing: 0.1em;
+  color: #212529;
+  border-radius: 0.5rem;
+  margin: 10px 0 0 10px;
+  width: 170px;
+}
+
+a.btn-border {
+  border-radius: 0;
+}
+
+a.btn-border:before,
+a.btn-border:after {
+  position: absolute;
+
+  width: 100%;
+  height: 2px;
+
+  content: '';
+  -webkit-transition: all .3s;
+  transition: all .3s;
+
+  background: rgb(36, 0, 167);
+}
+
+a.btn-border:before {
+  top: 0;
+  left: 0;
+}
+
+a.btn-border:after {
+  right: 0;
+  bottom: 0;
+}
+
+a.btn-border:hover:before,
+a.btn-border:hover:after {
+  width: 0;
 }
