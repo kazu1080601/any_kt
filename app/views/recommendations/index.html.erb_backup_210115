@@ -5,6 +5,14 @@
 <tr>
   <%# td要素はtable dataの略で、テーブルセルの内容を指定する。 %>
   <td>検索場所：</td><td><input type="text" id="addressInput" value="東京駅" style="width: 200px"></td>
+  <td style="padding-left: 50px;">Twitter検索ワード：</td>
+  <td>
+    <select id="tweetSearchWord">
+      <% (Recommendation.all.length - 1).times do |i| %>
+        <option value="<%= Recommendation.all.find(i + 2).id %>" selected><%= Recommendation.all.find(i + 2).name %></option>
+      <% end %>
+    <select>
+  </td>
   <td style="padding-left: 50px;">ジャンル：</td>
   <td>
     <select id="genreInput">
@@ -16,6 +24,8 @@
     <select>
   </td>
   <td style="padding-left: 50px;">KeyWord：</td><td><input type="text" id="keywordInput" value="寿司" style="width: 100px"></td>
+</tr>
+<tr>
   <td style="padding-left: 50px;">検索範囲：</td>
   <td>
     <select id="radiusInput">
@@ -126,6 +136,7 @@ function startNearbySearch(latLng){
   //入力したジャンルを取得
   const genreSelect = document.getElementById("genreInput");
   const genreInput = genreSelect.options[genreSelect.selectedIndex].value;
+
   
   //周辺検索
   service.nearbySearch(  // nearbySearchは、PlacesServiceクラスのメソッド。
@@ -156,7 +167,6 @@ function startNearbySearch(latLng){
 
 }
 
-
 /*
  周辺検索の結果表示
  ※nearbySearchのコールバック関数
@@ -186,6 +196,9 @@ function displayResults(results, status, pagination) {
       let searchList = {};
       let searchListName = []
       for (let i = 0; i < placesList.length; i++) {
+        if (i == 0) {
+          searchList["search_id"] = twitterSearchInput();
+        }
         searchList[`name${i}`] = placesList[i].name;
         searchListName[i] = placesList[i].name;
       }
@@ -214,7 +227,7 @@ function displayResults(results, status, pagination) {
         type: "GET",
         dataType: "json",
         // contentType: 'application/json'
-        data: { "search_list": searchList },
+        data: { "search_list": searchList, },
         success: function(returnList) {
           callback(returnList);
           }
@@ -272,7 +285,7 @@ function displayResults(results, status, pagination) {
           
           //クリック時にMapにマーカー表示するようにAタグを作成
           resultHTML += "<li>";
-          resultHTML += "<a href=\"/recommendations/" + i + "\" id=resultlist" + i + ">" + content + "</a>"
+          resultHTML += "<a href=# id=resultlist" + i + ">" + content + "</a>"
           // resultHTML += "<a href=\"javascript: void(0);\"";
           // resultHTML += " onclick=\"createMarker(";
           // resultHTML += "'" + place.name + "',";
@@ -313,7 +326,7 @@ function displayResults(results, status, pagination) {
                 placeId = placesList[k].place_id;
               }
             }
-            const shopHTML = "<a href=\"/recommendations/" + num + "/?shop_name=" + resultList[num].name + "&place_id=" + placeId + "\">" + resultList[num].name + "</a>";
+            const shopHTML = "<a href=\"/recommendations/new/?shop_name=" + resultList[num].name + "&place_id=" + placeId + "\">" + resultList[num].name + "</a>";
             let tweetHTML = "<ol>"
             for (let j = 0; j < resultList[num].tweets.length; j++) {
               tweetHTML += "<li class=\"tweet\">"
@@ -330,91 +343,6 @@ function displayResults(results, status, pagination) {
         }
 
 
-
-
-
-
-        // const tweetsShow = {};
-        // const shops = {};
-        // for (let i = 0; i < resultList.length; i++) {
-        //   tweetsShow[`${i}`] = new Promise(function(resolve) {
-        //     shops[`${i}`] = document.getElementById(`resultlist${i}`)
-        //     shops[`${i}`].addEventListener('click', function(e) {
-        //       e.preventDefault();
-        //       resolve(i);
-        //     });
-        //   });
-        //   tweetsShow[`${i}`].then(function(num) {
-        //     let resultShow = {};
-        //     resultShow.name = resultList[num].name;
-        //     let count = 1;
-        //     resultList[num].tweets.forEach( function(tweet) {
-        //       resultShow[`tweet${count}`] = tweet
-        //       count++
-        //     });
-        //     debugger
-        //   });
-        // }
-        
-
-
-
-
-
-
-
-        // const tweetShow = new Promise(function(resolve){
-        //   const shops = {}
-        //   for (let i = 0; i < resultList.length; i++) {
-        //     shops[`${i}`] = document.getElementById(`resultlist${i}`)
-        //     shops[`${i}`].addEventListener('click', function(e) {
-        //       e.preventDefault();
-        //       resolve(i)
-        //     });
-        //   }
-
-        // });
-
-        // setInterval(() => {
-        //   const tweetShow = new Promise(function(resolve){
-        //   for (let i = 0; i < resultList.length; i++) {
-        //       const shop = document.getElementById(`resultlist${i}`)
-        //       shop.addEventListener('click', function(e) {
-        //         e.preventDefault();
-        //         resolve(i)
-        //       });
-        //     }
-        //   });
-        //   tweetShow.then(function(num) {
-        //     let resultShow = {};
-        //     resultShow.name = resultList[num].name;
-        //     let count = 1;
-        //     resultList[num].tweets.forEach( function(tweet) {
-        //       resultShow[`tweet${count}`] = tweet
-        //       count++
-        //   });
-        // }, 1000);
-
-
-        // const tweetShow = new Promise(function(resolve){
-        //   for (let i = 0; i < resultList.length; i++) {
-        //     const shop = document.getElementById(`resultlist${i}`)
-        //     shop.addEventListener('click', function(e) {
-        //       e.preventDefault();
-        //       resolve(i)
-        //     });
-        //   }
-        // });
-
-        // tweetShow.then(function(num) {
-        //   let resultShow = {};
-        //   resultShow.name = resultList[num].name;
-        //   let count = 1;
-        //   resultList[num].tweets.forEach( function(tweet) {
-        //     resultShow[`tweet${count}`] = tweet
-        //     count++
-        //   });
-
           // ツイート表示はshowアクションにする予定だったが、うまくいかなかったため保留。（検索結果をshowアクションにparamsで渡すまではうまくいったが、画面表示の際にアクションを再読み込みしてしまい、その処理ではツイートのデータが入っておらず、結果としてうまくツイートの情報を渡せなかった。
           // $.ajax({
           //   url: "/recommendations/0",
@@ -425,12 +353,6 @@ function displayResults(results, status, pagination) {
           //   success: () => { window.location.href = '/recommendations/0'; }
           //   error: (test) => {alert("error");}
           // });
-
-
-
-
-
-
 
       }
     }
@@ -453,6 +375,13 @@ function displayResults(results, status, pagination) {
     }
 
   }
+}
+
+//入力したTwitter検索ワードを取得
+function twitterSearchInput() {
+  const twitterSelect = document.getElementById("tweetSearchWord");
+  twitterInput = Number(twitterSelect.options[twitterSelect.selectedIndex].value);
+  return twitterInput;
 }
 
 function createMarker(name, vicinity, lat, lng){

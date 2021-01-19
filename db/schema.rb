@@ -54,6 +54,8 @@ ActiveRecord::Schema.define(version: 2021_01_13_100618) do
     t.integer "genre_id", null: false
     t.string "place_id", null: false
     t.integer "recommendation_id", null: false
+    t.decimal "latitude", precision: 10, scale: 7, null: false
+    t.decimal "longitude", precision: 10, scale: 7, null: false
     t.bigint "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
