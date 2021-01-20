@@ -1,70 +1,38 @@
 <%= render "shared/header" %>
 
-<table class="search-area">
-<%# tr要素はTable Rowの略で、テーブルの行を記述する。 %>
-<tr>
-  <%# td要素はtable dataの略で、テーブルセルの内容を指定する。 %>
-  <td>検索場所：</td><td><input type="text" id="addressInput" value="東京駅" style="width: 200px"></td>
-  <td style="padding-left: 50px;">ジャンル：</td>
-  <td>
-    <select id="genreInput">
-    <option value="restaurant" selected>レストラン</option>
-    <option value="cafe">カフェ</option>
-    <option value="park">公園</option>
-    <option value="amusement_park">遊園地</option>
-    <option value="shopping_mall">ショッピングモール</option>
-    <select>
-  </td>
-  <td style="padding-left: 50px;">KeyWord：</td><td><input type="text" id="keywordInput" value="寿司" style="width: 100px"></td>
-  <td style="padding-left: 50px;">検索範囲：</td>
-  <td>
-    <select id="radiusInput">
-    <option value="200" selected>200 m</option>
-    <option value="500">500 m</option>
-    <option value="800">800 m</option>
-    <option value="1000">1 km</option>
-    <option value="1500">1.5 km</option>
-    <option value="2000">2 km</option>
-    <select>
-  </td>
-  <td style="padding-left: 50px">
-    <input type="button" style="width: 50px; height: 30px;" value="検索" onclick="getPlaces();">
-  </td>
-</tr>
-</table>
-
-<div class="main-area">
-  <div id="mapAreaInNew"></div>
-  <div>
-    店舗情報<br />
-    <table border="1" style="border-collapse: collapse">
-      <tr>
-        <td class="detail-table-left">店名</td>
-        <td class="detail-table-right" id="detail-name"></td>
-      </tr>
-      <tr>
-        <td class="detail-table-left">google評価</td>
-        <td class="detail-table-right" id="detail-rating"></td>
-      </tr>
-      <tr>
-        <td class="detail-table-left">住所</td>
-        <td class="detail-table-right" id="detail-address"></td>
-      </tr>
-      <tr>
-        <td class="detail-table-left">電話番号</td>
-        <td class="detail-table-right" id="detail-phone"></td>
-      </tr>
-      <tr>
-        <td class="detail-table-left">営業時間</td>
-        <td class="detail-table-right" id="detail-opening"></td>
-      </tr>
-      <tr>
-        <td class="detail-table-left">ウェブサイト</td>
-        <td class="detail-table-right" id="detail-website"></td>
-      </tr>
-    </table>
+<div class="container">
+  <div class="row main-area" style="margin-top: 20px;">
+    <div class="col-lg-auto"  id="mapAreaInNew"></div>
+    <div class="col-lg" style="font-size: 16px;">
+      店舗情報<br />
+      <table border="1" style="border-collapse: collapse">
+        <tr>
+          <td class="detail-table-left">店名</td>
+          <td class="detail-table-right" id="detail-name"></td>
+        </tr>
+        <tr>
+          <td class="detail-table-left">google評価</td>
+          <td class="detail-table-right" id="detail-rating"></td>
+        </tr>
+        <tr>
+          <td class="detail-table-left">住所</td>
+          <td class="detail-table-right" id="detail-address"></td>
+        </tr>
+        <tr>
+          <td class="detail-table-left">電話番号</td>
+          <td class="detail-table-right" id="detail-phone"></td>
+        </tr>
+        <tr>
+          <td class="detail-table-left">営業時間</td>
+          <td class="detail-table-right" id="detail-opening"></td>
+        </tr>
+        <tr>
+          <td class="detail-table-left">ウェブサイト</td>
+          <td class="detail-table-right" id="detail-website"></td>
+        </tr>
+      </table>
+    </div>
   </div>
-</div>
 
 
 <div class="valuation-area">

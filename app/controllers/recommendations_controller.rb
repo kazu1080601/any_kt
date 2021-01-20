@@ -18,7 +18,7 @@ class RecommendationsController < ApplicationController
   def create
     @valuation = Valuation.new(valuation_params)
     if @valuation.save
-      redirect_to root_path
+      redirect_to recommendations_path
     else
       render :new
     end
