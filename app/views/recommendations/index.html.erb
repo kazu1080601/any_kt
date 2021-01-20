@@ -247,6 +247,11 @@ function displayTweetResults(results, status, pagination) {
             if (tweetList[`${key}`] == null) {
               result.name = key;
               result.tweets = [];
+            } else if (tweetList[`${key}`].includes("error!")) {
+              let tweets = []
+              result.name = key;
+              tweets[0] = tweetList[`${key}`];
+              result.tweets = tweets;
             } else {
               let tweets = []
               for (let i = 0; i < tweetList[`${key}`].length; i++) {
@@ -267,6 +272,16 @@ function displayTweetResults(results, status, pagination) {
           return 0;
         });
 
+        // Tweet検索結果がエラーの店を配列の先頭に移動
+        for (let i = 0; i < resultList.length; i++) {
+          if (resultList[i].tweets[0] != null && resultList[i].tweets[0].includes("error!")) {
+            // spliceメソッドで対象の要素を切り取り、切り取った要素を"errorResult"に格納（要素1つだけ切り取るので第二引数は"1"）
+            const errorResult = resultList.splice(i, 1);
+            // 切り取った要素をunshiftメソッドを使用して先頭に挿入（spliceメソッドで切り取った要素は配列なので、添字が必要）
+            resultList.unshift(errorResult[0]);
+          }
+        }
+
         //resultList配列をループして、
         //結果表示のHTMLタグを組み立てる
         let resultHTML = "<ol>";
@@ -280,8 +295,13 @@ function displayTweetResults(results, status, pagination) {
           //   let content = "【`${tweetList[`${place.name}`].length}】 " + place.name;
           // }
           
-          //表示内容（ツイート数＋名称）
-          let content = "【" + `${place.tweets.length}` + "】 " + place.name;
+          //表示内容（ツイート数＋名称）、エラーの場合はツイート数の変わりに"error"と表示
+          let content = ""
+          if (place.tweets[0] != null && place.tweets[0].includes("error!")) {
+            content = "【error】 " + place.name;
+          } else {
+            content = "【" + `${place.tweets.length}` + "】 " + place.name;
+          }
           
           //クリック時にMapにマーカー表示するようにAタグを作成
           resultHTML += "<li>";
