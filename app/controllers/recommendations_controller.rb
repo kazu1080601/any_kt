@@ -1,7 +1,13 @@
 class RecommendationsController < ApplicationController
   def index
-    return_list = get_db(params[:search_list])
-    # return_list = get_tweet(params[:search_list])
+    # 最初にページ更新か、検索かで条件分岐。その次に、tweet検索の場合は、Twitter検索ワードを指定する「search_id」が含まれるので、その有無でTweet検索かDB検索かの条件分岐
+    if params[:search_list] == nil
+      return
+    elsif params[:search_list][:search_id] != nil
+      return_list = get_tweet(params[:search_list])
+    else
+      return_list = get_db(params[:search_list])
+    end
     render json: { returnList: return_list} unless return_list == nil
   end
 
@@ -78,9 +84,8 @@ class RecommendationsController < ApplicationController
 
       response = search_tweets(search_url, bearer_token, query_params)
       # puts response.code, JSON.pretty_generate(JSON.parse(response.body))
-      # 数値で比較すると条件分岐がうまく機能しないため、文字列に変換してから比較
-      if JSON.parse(response.body)["meta"]["result_count"].to_s == "0"
-      else
+      # Tweet検索結果が0の場合、処理を行うとnilのためエラーとなってしまうので、処理を行わない。数値で比較すると条件分岐がうまく機能しないため、文字列に変換してから比較
+      unless JSON.parse(response.body)["meta"]["result_count"].to_s == "0"
         response_hash.store(name,JSON.parse(response.body)["data"])
         response_hash[name].each do |data|
           data.delete("id")

@@ -10,7 +10,11 @@
       Twitter検索ワード
       <select id="tweetSearchWord" style="width: 150px">
         <% (Recommendation.all.length - 1).times do |i| %>
-          <option value="<%= Recommendation.all.find(i + 2).id %>" selected><%= Recommendation.all.find(i + 2).name %></option>
+          <% if i == 0 %>
+            <option value="<%= Recommendation.all.find(i + 2).id %>" selected><%= Recommendation.all.find(i + 2).name %></option>
+          <% else %>
+            <option value="<%= Recommendation.all.find(i + 2).id %>" ><%= Recommendation.all.find(i + 2).name %></option>
+          <% end %>
         <% end %>
       <select>
     </div>
@@ -26,7 +30,7 @@
     </div>
     <div class="col-lg">
       キーワード
-      <input type="text" id="keywordInput" value="寿司" style="width: 150px">
+      <input type="text" id="keywordInput" placeholder="例）焼肉 ※空欄も可" style="width: 150px">
     </div>
     <div class="col-lg">
       検索範囲
@@ -40,7 +44,8 @@
       <select>
     </div>
     <div class="col-lg">
-      <input type="button" style="width: 50px; height: 30px; margin-top: 10px;" value="検索" onclick="getPlaces();">
+      <input type="button" style="width: 200px; height: 30px;" value="関連Tweet検索" onclick="getPlaces(value);">
+      <input type="button" style="width: 200px; height: 30px; margin-top: 10px;" value="他ユーザーコメント検索" onclick="getPlaces(value);">
     </div>
   </div>
 
@@ -51,7 +56,8 @@
       <div id="results"></div>
     </div>
   </div>
-  <div class="row" style="margin-top: 20px; font-size: 16px;">関連ツイート（直近7日間）</div>
+  <div class="row tweet-hidden" id="tweet-results-title" style="margin-top: 20px; font-size: 16px;">関連ツイート（直近7日間）</div>
+  <div class="row db-hidden" id="db-results-title" style="margin-top: 20px; font-size: 16px;">他ユーザーのコメント</div>
   <div class="row" id="shop-name"></div>
   <div class="row" id="show-results"></div>
 </div>
@@ -76,7 +82,7 @@ function initMap() {
 /*
  お店情報取得
 */
-function getPlaces(){
+function getPlaces(searchPattern){
   
   //結果表示クリア
   document.getElementById("results").innerHTML = "";
@@ -98,7 +104,7 @@ function getPlaces(){
     function(results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         //取得した緯度・経度を使って周辺検索
-        startNearbySearch(results[0].geometry.location);  // 「results」は配列だが、1つしかデータが入っていない .geometry.locationは、緯度/経度座標を表す
+        startNearbySearch(results[0].geometry.location, searchPattern);  // 「results」は配列だが、1つしかデータが入っていない .geometry.locationは、緯度/経度座標を表す
       }
       else {
         alert(addressInput + "：位置情報が取得できませんでした。");
@@ -111,7 +117,7 @@ function getPlaces(){
  位置情報を使って周辺検索
   latLng : 位置座標（google.maps.LatLng）
 */
-function startNearbySearch(latLng){
+function startNearbySearch(latLng, searchPattern){
   
   //読み込み中表示
   document.getElementById("results").innerHTML = "Now Loading...";
@@ -138,19 +144,30 @@ function startNearbySearch(latLng){
   const genreSelect = document.getElementById("genreInput");
   const genreInput = genreSelect.options[genreSelect.selectedIndex].value;
 
-  
-  //周辺検索
-  service.nearbySearch(  // nearbySearchは、PlacesServiceクラスのメソッド。
-    {
-      location: latLng,
-      radius: radiusInput,
-      type: genreInput,
-      keyword: keywordInput,
-      language: 'ja'
-    },
-    displayResultsDb
-  );
-
+  //周辺検索  nearbySearchは、PlacesServiceクラスのメソッド。
+  if (searchPattern == "関連Tweet検索") {
+    service.nearbySearch(
+      {
+        location: latLng,
+        radius: radiusInput,
+        type: genreInput,
+        keyword: keywordInput,
+        language: 'ja'
+      },
+      displayTweetResults
+    );
+  } else {
+    service.nearbySearch(
+      {
+        location: latLng,
+        radius: radiusInput,
+        type: genreInput,
+        keyword: keywordInput,
+        language: 'ja'
+      },
+      displayDbResults
+    );
+  }
 
   //検索範囲の円を描く
   var circle = new google.maps.Circle(
@@ -175,7 +192,7 @@ function startNearbySearch(latLng){
   status ： 実行結果ステータス
   pagination : ページネーション
 */
-function displayResults(results, status, pagination) {
+function displayTweetResults(results, status, pagination) {
   if(status == google.maps.places.PlacesServiceStatus.OK) {
     //検索結果をplacesList配列に連結
     placesList = placesList.concat(results);
@@ -318,6 +335,7 @@ function displayResults(results, status, pagination) {
             }
             tweetHTML += "</ol>"
 
+            document.getElementById("tweet-results-title").classList.remove("tweet-hidden")
             document.getElementById("shop-name").innerHTML = shopHTML;
             document.getElementById("show-results").innerHTML = tweetHTML;
 
@@ -370,7 +388,7 @@ function displayResults(results, status, pagination) {
   status ： 実行結果ステータス
   pagination : ページネーション
 */
-function displayResultsDb(results, status, pagination) {
+function displayDbResults(results, status, pagination) {
   if(status == google.maps.places.PlacesServiceStatus.OK) {
     //検索結果をplacesList配列に連結
     placesList = placesList.concat(results);
@@ -523,6 +541,7 @@ function displayResultsDb(results, status, pagination) {
               }
               tweetHTML += "</ol>"
 
+              document.getElementById("db-results-title").classList.remove("db-hidden")
               document.getElementById("shop-name").innerHTML = shopHTML;
               document.getElementById("show-results").innerHTML = tweetHTML;
             }
