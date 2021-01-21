@@ -1,7 +1,8 @@
 <header>
   <div class="container">
     <div class="row justify-content-between">
-      <div class="col-lg"><%= link_to image_tag("logo.jpg", class:"logo"), "/recommendations" %></div>
+      <!-- link_toでページ遷移するとturbolinksが働き、JavaScriptやCSSのパースを省略してしまうため、JavaScriptがうまく動作しないことがある。下記のようにdata属性を追加することで、「data-turbolink」をオフにすることができるとのこと。 -->
+      <div class="col-lg"><%= link_to image_tag("logo.jpg", class:"logo"), "/recommendations", data: {"turbolinks" => false} %></div>
 
       <% if user_signed_in? %>
         <div class="col-lg-auto align-self-center header-right" style="width: 400px;">

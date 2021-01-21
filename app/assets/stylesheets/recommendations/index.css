@@ -36,3 +36,11 @@
 .col-lg{
   margin-top: 10px;
 }
+
+.tweet-hidden{
+  display: none;
+}
+
+.db-hidden{
+  display: none;
+}
