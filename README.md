@@ -108,9 +108,12 @@ ER図：~/ER.dio
 - belongs_to :genre
 
 # ローカルでの動作方法
-- git clone
-- ターミナルで「bundle install」を実施
-- ターミナルで「rails db:migrate」を実施
+ターミナルで以下の操作を実施してください。
+- git cloneを実行
+- bundle installを実行
+- yarn installを実行
+- rails db:createを実行
+- rails db:migrateを実行
 
 # 環境
 - OS: macOS Big Sur バージョン11.1
